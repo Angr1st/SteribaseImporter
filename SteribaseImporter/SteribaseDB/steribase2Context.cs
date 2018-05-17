@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SteribaseImporter.SteribaseDB
 {
-    public partial class steribaseContext : DbContext
+    public partial class steribase2Context : DbContext
     {
         public virtual DbSet<Applform> Applform { get; set; }
         public virtual DbSet<Applgeraet> Applgeraet { get; set; }
@@ -16,6 +16,7 @@ namespace SteribaseImporter.SteribaseDB
         public virtual DbSet<Arttyp> Arttyp { get; set; }
         public virtual DbSet<Artzubfkt> Artzubfkt { get; set; }
         public virtual DbSet<Dostyp> Dostyp { get; set; }
+        public virtual DbSet<ExtPat> ExtPat { get; set; }
         public virtual DbSet<Gp> Gp { get; set; }
         public virtual DbSet<Gpgr> Gpgr { get; set; }
         public virtual DbSet<Kostenstellen> Kostenstellen { get; set; }
@@ -24,6 +25,7 @@ namespace SteribaseImporter.SteribaseDB
         public virtual DbSet<Lagerbed> Lagerbed { get; set; }
         public virtual DbSet<Lagerort> Lagerort { get; set; }
         public virtual DbSet<Lightprotdfn> Lightprotdfn { get; set; }
+        public virtual DbSet<Mgmtinfo> Mgmtinfo { get; set; }
         public virtual DbSet<Patdisp> Patdisp { get; set; }
         public virtual DbSet<Sex> Sex { get; set; }
         public virtual DbSet<St> St { get; set; }
@@ -40,18 +42,16 @@ namespace SteribaseImporter.SteribaseDB
         public virtual DbSet<Zubkat> Zubkat { get; set; }
         public virtual DbSet<Zubstatus> Zubstatus { get; set; }
 
-        // Unable to generate entity type for table 'ext_pat'. Please see the warning messages.
         // Unable to generate entity type for table 'gpgpgr'. Please see the warning messages.
         // Unable to generate entity type for table 'gpkrka'. Please see the warning messages.
         // Unable to generate entity type for table 'gppat'. Please see the warning messages.
-        // Unable to generate entity type for table 'mgmtinfo'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=localhost;port=3306;user=root;password=;database=steribase");
+                optionsBuilder.UseMySql("server=localhost;port=3306;user=root;password=;database=steribase2");
             }
         }
 
@@ -433,6 +433,41 @@ namespace SteribaseImporter.SteribaseDB
                     .HasMaxLength(200);
             });
 
+            modelBuilder.Entity<ExtPat>(entity =>
+            {
+                entity.ToTable("ext_pat");
+
+                entity.Property(e => e.ExtPatId)
+                    .HasColumnName("ExtPatID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ExtApplId)
+                    .HasColumnName("ExtApplID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ExtPatGebDat).HasColumnType("datetime");
+
+                entity.Property(e => e.ExtPatName).HasMaxLength(200);
+
+                entity.Property(e => e.ExtPatSex).HasMaxLength(200);
+
+                entity.Property(e => e.ExtPatVorname).HasMaxLength(200);
+
+                entity.Property(e => e.ExtSysId)
+                    .HasColumnName("ExtSysID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.InsDate).HasColumnType("datetime");
+
+                entity.Property(e => e.RecId)
+                    .HasColumnName("RecID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SbpatGpid)
+                    .HasColumnName("SBPatGPID")
+                    .HasColumnType("int(11)");
+            });
+
             modelBuilder.Entity<Gp>(entity =>
             {
                 entity.ToTable("gp");
@@ -617,6 +652,43 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnType("int(11)");
 
                 entity.Property(e => e.LightProtName).HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<Mgmtinfo>(entity =>
+            {
+                entity.HasKey(e => new { e.VersionNo, e.ExportId, e.ExportDate, e.Theme, e.ImportStatId, e.SenderExtApplId, e.SenderExtSysId, e.ReceiverExtApplId, e.ReceiverExtSysId });
+
+                entity.ToTable("mgmtinfo");
+
+                entity.Property(e => e.VersionNo).HasMaxLength(200);
+
+                entity.Property(e => e.ExportId)
+                    .HasColumnName("ExportID")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.ExportDate).HasMaxLength(200);
+
+                entity.Property(e => e.Theme).HasMaxLength(200);
+
+                entity.Property(e => e.ImportStatId)
+                    .HasColumnName("ImportStatID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SenderExtApplId)
+                    .HasColumnName("SenderExtApplID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.SenderExtSysId)
+                    .HasColumnName("SenderExtSysID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ReceiverExtApplId)
+                    .HasColumnName("ReceiverExtApplID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ReceiverExtSysId)
+                    .HasColumnName("ReceiverExtSysID")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Patdisp>(entity =>
