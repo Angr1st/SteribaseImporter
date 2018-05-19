@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SteribaseImporter.SteribaseDB
 {
-    public partial class steribase2Context : DbContext
+    public partial class SteribaseContext : DbContext
     {
         public virtual DbSet<Applform> Applform { get; set; }
         public virtual DbSet<Applgeraet> Applgeraet { get; set; }
         public virtual DbSet<Applweg> Applweg { get; set; }
+        public virtual DbSet<Applzbh> Applzbh { get; set; }
         public virtual DbSet<Art> Art { get; set; }
         public virtual DbSet<Artaufbtyp> Artaufbtyp { get; set; }
         public virtual DbSet<Artb> Artb { get; set; }
@@ -18,14 +19,22 @@ namespace SteribaseImporter.SteribaseDB
         public virtual DbSet<Dostyp> Dostyp { get; set; }
         public virtual DbSet<ExtPat> ExtPat { get; set; }
         public virtual DbSet<Gp> Gp { get; set; }
+        public virtual DbSet<Gpgpgr> Gpgpgr { get; set; }
         public virtual DbSet<Gpgr> Gpgr { get; set; }
+        public virtual DbSet<Gpkrka> Gpkrka { get; set; }
+        public virtual DbSet<Gppat> Gppat { get; set; }
         public virtual DbSet<Kostenstellen> Kostenstellen { get; set; }
         public virtual DbSet<Krkasubtyp> Krkasubtyp { get; set; }
         public virtual DbSet<Krkatyp> Krkatyp { get; set; }
+        public virtual DbSet<Lab> Lab { get; set; }
+        public virtual DbSet<Labdet> Labdet { get; set; }
+        public virtual DbSet<Labwerte> Labwerte { get; set; }
+        public virtual DbSet<Labwerttyp> Labwerttyp { get; set; }
         public virtual DbSet<Lagerbed> Lagerbed { get; set; }
         public virtual DbSet<Lagerort> Lagerort { get; set; }
         public virtual DbSet<Lightprotdfn> Lightprotdfn { get; set; }
         public virtual DbSet<Mgmtinfo> Mgmtinfo { get; set; }
+        public virtual DbSet<Patdiag> Patdiag { get; set; }
         public virtual DbSet<Patdisp> Patdisp { get; set; }
         public virtual DbSet<Sex> Sex { get; set; }
         public virtual DbSet<St> St { get; set; }
@@ -38,20 +47,18 @@ namespace SteribaseImporter.SteribaseDB
         public virtual DbSet<Zub> Zub { get; set; }
         public virtual DbSet<Zubartdoku> Zubartdoku { get; set; }
         public virtual DbSet<Zubdet> Zubdet { get; set; }
+        public virtual DbSet<Zubdetartb> Zubdetartb { get; set; }
+        public virtual DbSet<Zubdetartbmixtimedfn> Zubdetartbmixtimedfn { get; set; }
         public virtual DbSet<Zubdetimprel> Zubdetimprel { get; set; }
         public virtual DbSet<Zubkat> Zubkat { get; set; }
         public virtual DbSet<Zubstatus> Zubstatus { get; set; }
-
-        // Unable to generate entity type for table 'gpgpgr'. Please see the warning messages.
-        // Unable to generate entity type for table 'gpkrka'. Please see the warning messages.
-        // Unable to generate entity type for table 'gppat'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=localhost;port=3306;user=root;password=;database=steribase2");
+                optionsBuilder.UseMySql("server=localhost;port=3306;user=root;password=;database=steribase");
             }
         }
 
@@ -73,7 +80,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ApplFbez)
                     .HasColumnName("ApplFBez")
-                    .HasMaxLength(200);
+                    .HasMaxLength(8);
             });
 
             modelBuilder.Entity<Applgeraet>(entity =>
@@ -111,7 +118,22 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ApplWbez)
                     .HasColumnName("ApplWBez")
-                    .HasMaxLength(200);
+                    .HasMaxLength(4);
+            });
+
+            modelBuilder.Entity<Applzbh>(entity =>
+            {
+                entity.ToTable("applzbh");
+
+                entity.Property(e => e.ApplZbhId)
+                    .HasColumnName("ApplZbhID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Active).HasMaxLength(4);
+
+                entity.Property(e => e.ApplZbhBez).HasMaxLength(200);
+
+                entity.Property(e => e.ApplZbhTaxBez).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Art>(entity =>
@@ -134,11 +156,11 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtAnbrHaltbH).HasColumnType("int(11)");
 
-                entity.Property(e => e.ArtAnbrHaltbIgnoreForZubHaltb).HasMaxLength(200);
+                entity.Property(e => e.ArtAnbrHaltbIgnoreForZubHaltb).HasMaxLength(5);
 
                 entity.Property(e => e.ArtAnbrHaltbM).HasColumnType("int(11)");
 
-                entity.Property(e => e.ArtAnbrIsPos).HasMaxLength(200);
+                entity.Property(e => e.ArtAnbrIsPos).HasMaxLength(4);
 
                 entity.Property(e => e.ArtAnbrTmminPart).HasColumnName("ArtAnbrTMMinPart");
 
@@ -148,13 +170,13 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtAv)
                     .HasColumnName("ArtAV")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
 
                 entity.Property(e => e.ArtBestMinVe)
                     .HasColumnName("ArtBestMinVE")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.ArtBez).HasMaxLength(200);
+                entity.Property(e => e.ArtBez).HasMaxLength(3);
 
                 entity.Property(e => e.ArtBid)
                     .HasColumnName("ArtBID")
@@ -162,9 +184,9 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtDataInpOk)
                     .HasColumnName("ArtDataInpOK")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
 
-                entity.Property(e => e.ArtFreeForPrd).HasMaxLength(200);
+                entity.Property(e => e.ArtFreeForPrd).HasMaxLength(4);
 
                 entity.Property(e => e.ArtHaltbMon).HasColumnType("int(11)");
 
@@ -180,9 +202,9 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtInsDat).HasColumnType("datetime");
 
-                entity.Property(e => e.ArtIsApplB).HasMaxLength(200);
+                entity.Property(e => e.ArtIsApplB).HasMaxLength(5);
 
-                entity.Property(e => e.ArtIsSubArt).HasMaxLength(200);
+                entity.Property(e => e.ArtIsSubArt).HasMaxLength(4);
 
                 entity.Property(e => e.ArtIsTltyp)
                     .HasColumnName("ArtIsTLTyp")
@@ -190,9 +212,9 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtKztmp)
                     .HasColumnName("ArtKZTmp")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
 
-                entity.Property(e => e.ArtLag).HasMaxLength(200);
+                entity.Property(e => e.ArtLag).HasMaxLength(5);
 
                 entity.Property(e => e.ArtLagBed).HasColumnType("int(11)");
 
@@ -206,7 +228,7 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("ArtMinOrderVE")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.ArtMwStTyp).HasMaxLength(200);
+                entity.Property(e => e.ArtMwStTyp).HasMaxLength(4);
 
                 entity.Property(e => e.ArtPzn)
                     .HasColumnName("ArtPZN")
@@ -236,7 +258,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtTm)
                     .HasColumnName("ArtTM")
-                    .HasMaxLength(200);
+                    .HasMaxLength(4);
 
                 entity.Property(e => e.ArtTmanz)
                     .HasColumnName("ArtTMAnz")
@@ -276,7 +298,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtVe)
                     .HasColumnName("ArtVE")
-                    .HasMaxLength(200);
+                    .HasMaxLength(3);
 
                 entity.Property(e => e.ArtVertriebAbDat).HasColumnType("datetime");
 
@@ -286,7 +308,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.NoSyncToAbda)
                     .HasColumnName("NoSyncToABDA")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
 
                 entity.HasOne(d => d.ArtB)
                     .WithMany(p => p.Art)
@@ -340,7 +362,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtAnbiet).HasColumnType("int(11)");
 
-                entity.Property(e => e.ArtChB).HasMaxLength(200);
+                entity.Property(e => e.ArtChB).HasMaxLength(8);
 
                 entity.Property(e => e.ArtDosUnit).HasColumnType("int(11)");
 
@@ -409,7 +431,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ArtZubFktKz)
                     .HasColumnName("ArtZubFktKZ")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
             });
 
             modelBuilder.Entity<Dostyp>(entity =>
@@ -420,17 +442,17 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("DosTypID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.AbsRel).HasMaxLength(200);
+                entity.Property(e => e.AbsRel).HasMaxLength(3);
 
                 entity.Property(e => e.DosTypBesch).HasMaxLength(200);
 
-                entity.Property(e => e.DosTypBez).HasMaxLength(200);
+                entity.Property(e => e.DosTypBez).HasMaxLength(4);
 
-                entity.Property(e => e.DosTypRel).HasMaxLength(200);
+                entity.Property(e => e.DosTypRel).HasMaxLength(8);
 
                 entity.Property(e => e.SysDs)
                     .HasColumnName("SysDS")
-                    .HasMaxLength(200);
+                    .HasMaxLength(4);
             });
 
             modelBuilder.Entity<ExtPat>(entity =>
@@ -449,7 +471,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ExtPatName).HasMaxLength(200);
 
-                entity.Property(e => e.ExtPatSex).HasMaxLength(200);
+                entity.Property(e => e.ExtPatSex).HasMaxLength(1);
 
                 entity.Property(e => e.ExtPatVorname).HasMaxLength(200);
 
@@ -476,7 +498,17 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("GPID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Archiv).HasMaxLength(200);
+                entity.Property(e => e.Archiv).HasMaxLength(5);
+
+                entity.Property(e => e.BankBez).HasMaxLength(200);
+
+                entity.Property(e => e.Bic)
+                    .HasColumnName("BIC")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Blz)
+                    .HasColumnName("BLZ")
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.Bundesland).HasMaxLength(200);
 
@@ -484,7 +516,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.Gpanrede)
                     .HasColumnName("GPAnrede")
-                    .HasMaxLength(200);
+                    .HasMaxLength(4);
 
                 entity.Property(e => e.GpfaName)
                     .HasColumnName("GPFaName")
@@ -492,7 +524,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.Gpkurz)
                     .HasColumnName("GPKurz")
-                    .HasMaxLength(200);
+                    .HasMaxLength(6);
 
                 entity.Property(e => e.Gpmessage)
                     .HasColumnName("GPMessage")
@@ -504,15 +536,21 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.Gptitel)
                     .HasColumnName("GPTitel")
-                    .HasMaxLength(200);
+                    .HasMaxLength(8);
 
                 entity.Property(e => e.Gpvorname)
                     .HasColumnName("GPVorname")
                     .HasMaxLength(200);
 
+                entity.Property(e => e.Iban)
+                    .HasColumnName("IBAN")
+                    .HasMaxLength(200);
+
                 entity.Property(e => e.KeyAdrAbda)
                     .HasColumnName("Key_ADR_ABDA")
                     .HasColumnType("int(11)");
+
+                entity.Property(e => e.KtoNr).HasColumnType("int(11)");
 
                 entity.Property(e => e.KvarztNr)
                     .HasColumnName("KVArztNr")
@@ -526,7 +564,7 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("KVBzkID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Nation).HasMaxLength(200);
+                entity.Property(e => e.Nation).HasMaxLength(1);
 
                 entity.Property(e => e.Ort).HasMaxLength(200);
 
@@ -542,9 +580,51 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.Postf).HasColumnType("int(11)");
 
-                entity.Property(e => e.Sex).HasMaxLength(200);
+                entity.Property(e => e.SepamandatsRef)
+                    .HasColumnName("SEPAMandatsRef")
+                    .HasMaxLength(7);
+
+                entity.Property(e => e.SepamandatsRefLastUseDat)
+                    .HasColumnName("SEPAMandatsRefLastUseDat")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Sex).HasMaxLength(1);
 
                 entity.Property(e => e.Strasse).HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<Gpgpgr>(entity =>
+            {
+                entity.HasKey(e => new { e.Gpid, e.GpgrId });
+
+                entity.ToTable("gpgpgr");
+
+                entity.HasIndex(e => e.GpgrId)
+                    .HasName("GPGrID");
+
+                entity.Property(e => e.Gpid)
+                    .HasColumnName("GPID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.GpgrId)
+                    .HasColumnName("GPGrID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.RecId)
+                    .HasColumnName("RecID")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.Gpgr)
+                    .WithMany(p => p.Gpgpgr)
+                    .HasForeignKey(d => d.GpgrId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gpgpgr_ibfk_2");
+
+                entity.HasOne(d => d.Gp)
+                    .WithMany(p => p.Gpgpgr)
+                    .HasForeignKey(d => d.Gpid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gpgpgr_ibfk_1");
             });
 
             modelBuilder.Entity<Gpgr>(entity =>
@@ -558,6 +638,103 @@ namespace SteribaseImporter.SteribaseDB
                 entity.Property(e => e.Gpgruppe)
                     .HasColumnName("GPGruppe")
                     .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<Gpkrka>(entity =>
+            {
+                entity.HasKey(e => new { e.Gpid, e.KrKaTypId, e.KrKaSubTypId });
+
+                entity.ToTable("gpkrka");
+
+                entity.HasIndex(e => e.KrKaSubTypId)
+                    .HasName("KrKaSubTypID");
+
+                entity.HasIndex(e => e.KrKaTypId)
+                    .HasName("KrKaTypID");
+
+                entity.Property(e => e.Gpid)
+                    .HasColumnName("GPID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.KrKaTypId)
+                    .HasColumnName("KrKaTypID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.KrKaSubTypId)
+                    .HasColumnName("KrKaSubTypID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.KrKaVknr)
+                    .HasColumnName("KrKaVKNR")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.KrkaIk)
+                    .HasColumnName("KrkaIK")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.Gp)
+                    .WithMany(p => p.Gpkrka)
+                    .HasForeignKey(d => d.Gpid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gpkrka_ibfk_1");
+
+                entity.HasOne(d => d.KrKaSubTyp)
+                    .WithMany(p => p.Gpkrka)
+                    .HasForeignKey(d => d.KrKaSubTypId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gpkrka_ibfk_3");
+
+                entity.HasOne(d => d.KrKaTyp)
+                    .WithMany(p => p.Gpkrka)
+                    .HasForeignKey(d => d.KrKaTypId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gpkrka_ibfk_2");
+            });
+
+            modelBuilder.Entity<Gppat>(entity =>
+            {
+                entity.HasKey(e => new { e.Gpid, e.VerStatId });
+
+                entity.ToTable("gppat");
+
+                entity.HasIndex(e => e.VerStatId)
+                    .HasName("VerStatID");
+
+                entity.Property(e => e.Gpid)
+                    .HasColumnName("GPID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.VerStatId)
+                    .HasColumnName("VerStatID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.KrKaId)
+                    .HasColumnName("KrKaID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.VersMitglStatus).HasColumnType("int(11)");
+
+                entity.Property(e => e.VersNr).HasMaxLength(200);
+
+                entity.Property(e => e.VkgueltBis)
+                    .HasColumnName("VKGueltBis")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.ZuzFreiAb).HasColumnType("datetime");
+
+                entity.Property(e => e.ZuzFreiBis).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Gp)
+                    .WithMany(p => p.Gppat)
+                    .HasForeignKey(d => d.Gpid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gppat_ibfk_1");
+
+                entity.HasOne(d => d.VerStat)
+                    .WithMany(p => p.Gppat)
+                    .HasForeignKey(d => d.VerStatId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("gppat_ibfk_2");
             });
 
             modelBuilder.Entity<Kostenstellen>(entity =>
@@ -595,6 +772,100 @@ namespace SteribaseImporter.SteribaseDB
                 entity.Property(e => e.TypBez).HasMaxLength(200);
             });
 
+            modelBuilder.Entity<Lab>(entity =>
+            {
+                entity.ToTable("lab");
+
+                entity.Property(e => e.LabId)
+                    .HasColumnName("LabID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Datum).HasColumnType("datetime");
+
+                entity.Property(e => e.Patient).HasColumnType("int(11)");
+            });
+
+            modelBuilder.Entity<Labdet>(entity =>
+            {
+                entity.ToTable("labdet");
+
+                entity.HasIndex(e => e.LabId)
+                    .HasName("LabID");
+
+                entity.HasIndex(e => e.LabWertId)
+                    .HasName("LabWertID");
+
+                entity.Property(e => e.LabDetId)
+                    .HasColumnName("LabDetID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.LabDetBem).HasMaxLength(200);
+
+                entity.Property(e => e.LabId)
+                    .HasColumnName("LabID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertId)
+                    .HasColumnName("LabWertID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Wert).HasMaxLength(5);
+
+                entity.HasOne(d => d.Lab)
+                    .WithMany(p => p.Labdet)
+                    .HasForeignKey(d => d.LabId)
+                    .HasConstraintName("labdet_ibfk_1");
+
+                entity.HasOne(d => d.LabWert)
+                    .WithMany(p => p.Labdet)
+                    .HasForeignKey(d => d.LabWertId)
+                    .HasConstraintName("labdet_ibfk_2");
+            });
+
+            modelBuilder.Entity<Labwerte>(entity =>
+            {
+                entity.HasKey(e => e.LabWertId);
+
+                entity.ToTable("labwerte");
+
+                entity.HasIndex(e => e.LabWertTyp)
+                    .HasName("LabWertTyp");
+
+                entity.Property(e => e.LabWertId)
+                    .HasColumnName("LabWertID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertBez).HasMaxLength(200);
+
+                entity.Property(e => e.LabWertMax).HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertMin).HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertTyp).HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertUnit).HasColumnType("int(11)");
+
+                entity.Property(e => e.SysDs)
+                    .HasColumnName("SysDS")
+                    .HasMaxLength(4);
+
+                entity.HasOne(d => d.LabWertTypNavigation)
+                    .WithMany(p => p.Labwerte)
+                    .HasForeignKey(d => d.LabWertTyp)
+                    .HasConstraintName("labwerte_ibfk_1");
+            });
+
+            modelBuilder.Entity<Labwerttyp>(entity =>
+            {
+                entity.HasKey(e => e.LabWertTyp);
+
+                entity.ToTable("labwerttyp");
+
+                entity.Property(e => e.LabWertTyp).HasColumnType("int(11)");
+
+                entity.Property(e => e.LabWertTypBez).HasMaxLength(9);
+            });
+
             modelBuilder.Entity<Lagerbed>(entity =>
             {
                 entity.HasKey(e => e.LagBedId);
@@ -621,15 +892,15 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("LagOrtID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Active).HasMaxLength(200);
+                entity.Property(e => e.Active).HasMaxLength(4);
 
                 entity.Property(e => e.LagBedId)
                     .HasColumnName("LagBedID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.LagOrtBez).HasMaxLength(200);
+                entity.Property(e => e.LagOrtBez).HasMaxLength(5);
 
-                entity.Property(e => e.PrdLineLag).HasMaxLength(200);
+                entity.Property(e => e.PrdLineLag).HasMaxLength(5);
 
                 entity.Property(e => e.SperrLagTypId)
                     .HasColumnName("SperrLagTypID")
@@ -656,19 +927,11 @@ namespace SteribaseImporter.SteribaseDB
 
             modelBuilder.Entity<Mgmtinfo>(entity =>
             {
-                entity.HasKey(e => new { e.VersionNo, e.ExportId, e.ExportDate, e.Theme, e.ImportStatId, e.SenderExtApplId, e.SenderExtSysId, e.ReceiverExtApplId, e.ReceiverExtSysId });
+                entity.HasKey(e => new { e.ExportDate, e.ImportStatId, e.SenderExtApplId, e.SenderExtSysId, e.ReceiverExtApplId, e.ReceiverExtSysId });
 
                 entity.ToTable("mgmtinfo");
 
-                entity.Property(e => e.VersionNo).HasMaxLength(200);
-
-                entity.Property(e => e.ExportId)
-                    .HasColumnName("ExportID")
-                    .HasMaxLength(200);
-
-                entity.Property(e => e.ExportDate).HasMaxLength(200);
-
-                entity.Property(e => e.Theme).HasMaxLength(200);
+                entity.Property(e => e.ExportDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ImportStatId)
                     .HasColumnName("ImportStatID")
@@ -689,6 +952,31 @@ namespace SteribaseImporter.SteribaseDB
                 entity.Property(e => e.ReceiverExtSysId)
                     .HasColumnName("ReceiverExtSysID")
                     .HasColumnType("int(11)");
+
+                entity.Property(e => e.ExportId)
+                    .HasColumnName("ExportID")
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Theme).HasMaxLength(200);
+
+                entity.Property(e => e.VersionNo).HasMaxLength(8);
+            });
+
+            modelBuilder.Entity<Patdiag>(entity =>
+            {
+                entity.ToTable("patdiag");
+
+                entity.Property(e => e.PatDiagId)
+                    .HasColumnName("PatDiagID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.DiagDat).HasColumnType("datetime");
+
+                entity.Property(e => e.DiagTxt).HasMaxLength(200);
+
+                entity.Property(e => e.PatGpid)
+                    .HasColumnName("PatGPID")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Patdisp>(entity =>
@@ -699,7 +987,7 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("PatDispID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.PatDispBez).HasMaxLength(200);
+                entity.Property(e => e.PatDispBez).HasMaxLength(5);
 
                 entity.Property(e => e.PatDispMemo).HasMaxLength(200);
             });
@@ -710,9 +998,9 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.SexId)
                     .HasColumnName("SexID")
-                    .HasMaxLength(200);
+                    .HasMaxLength(1);
 
-                entity.Property(e => e.SexBez).HasMaxLength(200);
+                entity.Property(e => e.SexBez).HasMaxLength(8);
             });
 
             modelBuilder.Entity<St>(entity =>
@@ -749,7 +1037,7 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("TaxTypID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.TaxTypBez).HasMaxLength(200);
+                entity.Property(e => e.TaxTypBez).HasMaxLength(3);
             });
 
             modelBuilder.Entity<Tl>(entity =>
@@ -783,7 +1071,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.UnitKz)
                     .HasColumnName("UnitKZ")
-                    .HasMaxLength(200);
+                    .HasMaxLength(6);
 
                 entity.Property(e => e.UnitText).HasMaxLength(200);
             });
@@ -798,7 +1086,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.UsrName).HasMaxLength(200);
 
-                entity.Property(e => e.UsrShort).HasMaxLength(200);
+                entity.Property(e => e.UsrShort).HasMaxLength(5);
             });
 
             modelBuilder.Entity<Verstat>(entity =>
@@ -818,6 +1106,9 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.HasIndex(e => e.KostId)
                     .HasName("KostID");
+
+                entity.HasIndex(e => e.LabId)
+                    .HasName("LabID");
 
                 entity.HasIndex(e => e.PatDispId)
                     .HasName("PatDispID");
@@ -843,6 +1134,10 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("KostID")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.LabId)
+                    .HasColumnName("LabID")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.LohnAuftrGeb).HasColumnType("int(11)");
 
                 entity.Property(e => e.LohnHerst).HasColumnType("int(11)");
@@ -853,17 +1148,13 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.PatGebDat).HasColumnType("datetime");
 
-                entity.Property(e => e.PatGew).HasColumnType("int(11)");
-
-                entity.Property(e => e.PatGewIdeal).HasMaxLength(200);
-
-                entity.Property(e => e.PatGewReal).HasColumnType("int(11)");
+                entity.Property(e => e.PatGewIdeal).HasMaxLength(5);
 
                 entity.Property(e => e.PatGr).HasColumnType("int(11)");
 
                 entity.Property(e => e.PatKof).HasColumnName("PatKOF");
 
-                entity.Property(e => e.PatSex).HasMaxLength(200);
+                entity.Property(e => e.PatSex).HasMaxLength(1);
 
                 entity.Property(e => e.PatVerStatId)
                     .HasColumnName("PatVerStatID")
@@ -891,6 +1182,11 @@ namespace SteribaseImporter.SteribaseDB
                     .WithMany(p => p.Zub)
                     .HasForeignKey(d => d.KostId)
                     .HasConstraintName("zub_ibfk_2");
+
+                entity.HasOne(d => d.Lab)
+                    .WithMany(p => p.Zub)
+                    .HasForeignKey(d => d.LabId)
+                    .HasConstraintName("zub_ibfk_4");
 
                 entity.HasOne(d => d.PatDisp)
                     .WithMany(p => p.Zub)
@@ -935,11 +1231,11 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("ZubArtDokuID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Anbruch).HasMaxLength(200);
+                entity.Property(e => e.Anbruch).HasMaxLength(5);
 
                 entity.Property(e => e.ArtBez).HasMaxLength(200);
 
-                entity.Property(e => e.ArtChB).HasMaxLength(200);
+                entity.Property(e => e.ArtChB).HasMaxLength(8);
 
                 entity.Property(e => e.ArtFkt).HasColumnType("int(11)");
 
@@ -983,23 +1279,23 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("AufbTypID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.AusAnbr).HasMaxLength(200);
+                entity.Property(e => e.AusAnbr).HasMaxLength(5);
 
                 entity.Property(e => e.DokuDat).HasColumnType("datetime");
 
                 entity.Property(e => e.DosUnit).HasColumnType("int(11)");
 
-                entity.Property(e => e.EndlessChB).HasMaxLength(200);
+                entity.Property(e => e.EndlessChB).HasMaxLength(5);
 
                 entity.Property(e => e.HaltbDat).HasColumnType("datetime");
 
-                entity.Property(e => e.IsApplB).HasMaxLength(200);
+                entity.Property(e => e.IsApplB).HasMaxLength(5);
 
                 entity.Property(e => e.MixNr).HasColumnType("int(11)");
 
                 entity.Property(e => e.RekExAbtl)
                     .HasColumnName("RekExABTL")
-                    .HasMaxLength(200);
+                    .HasMaxLength(5);
 
                 entity.Property(e => e.Stid)
                     .HasColumnName("STID")
@@ -1009,9 +1305,9 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("UsrID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.Verbraucht).HasMaxLength(200);
+                entity.Property(e => e.Verbraucht).HasMaxLength(5);
 
-                entity.Property(e => e.VolCountsForSum).HasMaxLength(200);
+                entity.Property(e => e.VolCountsForSum).HasMaxLength(5);
 
                 entity.Property(e => e.VolUnit).HasColumnType("int(11)");
 
@@ -1029,7 +1325,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ZubMixId)
                     .HasColumnName("ZubMixID")
-                    .HasMaxLength(200);
+                    .HasMaxLength(8);
 
                 entity.HasOne(d => d.Art)
                     .WithMany(p => p.Zubartdoku)
@@ -1085,6 +1381,9 @@ namespace SteribaseImporter.SteribaseDB
                 entity.HasIndex(e => e.ApplWid)
                     .HasName("ApplWID");
 
+                entity.HasIndex(e => e.ApplZbhId)
+                    .HasName("ApplZbhID");
+
                 entity.HasIndex(e => e.DosTypId)
                     .HasName("DosTypID");
 
@@ -1133,7 +1432,11 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnName("ApplWID")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.AutIdem).HasMaxLength(200);
+                entity.Property(e => e.ApplZbhId)
+                    .HasColumnName("ApplZbhID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.AutIdem).HasMaxLength(5);
 
                 entity.Property(e => e.DosTypId)
                     .HasColumnName("DosTypID")
@@ -1179,7 +1482,7 @@ namespace SteribaseImporter.SteribaseDB
 
                 entity.Property(e => e.ZubMixId)
                     .HasColumnName("ZubMixID")
-                    .HasMaxLength(200);
+                    .HasMaxLength(8);
 
                 entity.Property(e => e.ZubStatId)
                     .HasColumnName("ZubStatID")
@@ -1199,6 +1502,11 @@ namespace SteribaseImporter.SteribaseDB
                     .WithMany(p => p.Zubdet)
                     .HasForeignKey(d => d.ApplWid)
                     .HasConstraintName("zubdet_ibfk_7");
+
+                entity.HasOne(d => d.ApplZbh)
+                    .WithMany(p => p.Zubdet)
+                    .HasForeignKey(d => d.ApplZbhId)
+                    .HasConstraintName("zubdet_ibfk_10");
 
                 entity.HasOne(d => d.DosTyp)
                     .WithMany(p => p.Zubdet)
@@ -1231,6 +1539,104 @@ namespace SteribaseImporter.SteribaseDB
                     .HasConstraintName("zubdet_ibfk_3");
             });
 
+            modelBuilder.Entity<Zubdetartb>(entity =>
+            {
+                entity.ToTable("zubdetartb");
+
+                entity.HasIndex(e => e.ArtBid)
+                    .HasName("ArtBID");
+
+                entity.HasIndex(e => e.MixTimeId)
+                    .HasName("MixTimeID");
+
+                entity.HasIndex(e => e.UnitId)
+                    .HasName("UnitID");
+
+                entity.HasIndex(e => e.ZubDetId)
+                    .HasName("ZubDetID");
+
+                entity.HasIndex(e => e.ZubId)
+                    .HasName("ZubID");
+
+                entity.Property(e => e.ZubDetArtBid)
+                    .HasColumnName("ZubDetArtBID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.AbfSequenz).HasColumnType("int(11)");
+
+                entity.Property(e => e.AbfStatPosId)
+                    .HasColumnName("AbfStatPosID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ApplBsubKompart)
+                    .HasColumnName("ApplBSubKompart")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ArtBid)
+                    .HasColumnName("ArtBID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.AutIdem).HasMaxLength(5);
+
+                entity.Property(e => e.MasseUnit).HasColumnType("int(11)");
+
+                entity.Property(e => e.Menge).HasColumnType("int(11)");
+
+                entity.Property(e => e.MixTimeId)
+                    .HasColumnName("MixTimeID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.UnitId)
+                    .HasColumnName("UnitID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ZubDetId)
+                    .HasColumnName("ZubDetID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ZubId)
+                    .HasColumnName("ZubID")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.ArtB)
+                    .WithMany(p => p.Zubdetartb)
+                    .HasForeignKey(d => d.ArtBid)
+                    .HasConstraintName("zubdetartb_ibfk_3");
+
+                entity.HasOne(d => d.MixTime)
+                    .WithMany(p => p.Zubdetartb)
+                    .HasForeignKey(d => d.MixTimeId)
+                    .HasConstraintName("zubdetartb_ibfk_5");
+
+                entity.HasOne(d => d.Unit)
+                    .WithMany(p => p.Zubdetartb)
+                    .HasForeignKey(d => d.UnitId)
+                    .HasConstraintName("zubdetartb_ibfk_4");
+
+                entity.HasOne(d => d.ZubDet)
+                    .WithMany(p => p.Zubdetartb)
+                    .HasForeignKey(d => d.ZubDetId)
+                    .HasConstraintName("zubdetartb_ibfk_2");
+
+                entity.HasOne(d => d.Zub)
+                    .WithMany(p => p.Zubdetartb)
+                    .HasForeignKey(d => d.ZubId)
+                    .HasConstraintName("zubdetartb_ibfk_1");
+            });
+
+            modelBuilder.Entity<Zubdetartbmixtimedfn>(entity =>
+            {
+                entity.HasKey(e => e.MixTimeId);
+
+                entity.ToTable("zubdetartbmixtimedfn");
+
+                entity.Property(e => e.MixTimeId)
+                    .HasColumnName("MixTimeID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.MixTimeBez).HasMaxLength(200);
+            });
+
             modelBuilder.Entity<Zubdetimprel>(entity =>
             {
                 entity.HasKey(e => e.RelId);
@@ -1259,6 +1665,8 @@ namespace SteribaseImporter.SteribaseDB
                     .HasColumnType("int(11)");
 
                 entity.Property(e => e.InsDat).HasColumnType("datetime");
+
+                entity.Property(e => e.MoreInfo).HasMaxLength(200);
 
                 entity.Property(e => e.Status).HasColumnType("int(11)");
 

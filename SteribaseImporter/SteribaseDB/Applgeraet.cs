@@ -10,9 +10,9 @@ namespace SteribaseImporter.SteribaseDB
             Zubdet = new HashSet<Zubdet>();
         }
 
-        public int ApplGid { get; set; }
         public string ApplGbez { get; set; }
         public string ApplGbesch { get; set; }
+        public int ApplGid { get; set; }
 
         public ICollection<Zubdet> Zubdet { get; set; }
     }

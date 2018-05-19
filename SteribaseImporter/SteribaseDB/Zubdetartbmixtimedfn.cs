@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace SteribaseImporter.SteribaseDB
 {
-    public partial class Artb
+    public partial class Zubdetartbmixtimedfn
     {
-        public Artb()
+        public Zubdetartbmixtimedfn()
         {
-            Art = new HashSet<Art>();
             Zubdetartb = new HashSet<Zubdetartb>();
         }
 
-        public string ArtBbez { get; set; }
-        public int ArtBid { get; set; }
+        public int MixTimeId { get; set; }
+        public string MixTimeBez { get; set; }
 
-        public ICollection<Art> Art { get; set; }
         public ICollection<Zubdetartb> Zubdetartb { get; set; }
     }
 }

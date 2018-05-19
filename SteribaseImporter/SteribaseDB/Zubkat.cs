@@ -11,9 +11,9 @@ namespace SteribaseImporter.SteribaseDB
             Zubdet = new HashSet<Zubdet>();
         }
 
-        public int ZubKatId { get; set; }
-        public string ZubKatBez { get; set; }
         public string ZubKatBesch { get; set; }
+        public string ZubKatBez { get; set; }
+        public int ZubKatId { get; set; }
 
         public ICollection<Zubartdoku> Zubartdoku { get; set; }
         public ICollection<Zubdet> Zubdet { get; set; }

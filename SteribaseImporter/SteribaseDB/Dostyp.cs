@@ -10,12 +10,12 @@ namespace SteribaseImporter.SteribaseDB
             Zubdet = new HashSet<Zubdet>();
         }
 
-        public int DosTypId { get; set; }
-        public string DosTypBez { get; set; }
-        public string DosTypRel { get; set; }
         public string DosTypBesch { get; set; }
+        public string DosTypRel { get; set; }
         public string SysDs { get; set; }
+        public string DosTypBez { get; set; }
         public string AbsRel { get; set; }
+        public int DosTypId { get; set; }
 
         public ICollection<Zubdet> Zubdet { get; set; }
     }

@@ -10,8 +10,8 @@ namespace SteribaseImporter.SteribaseDB
             Zubartdoku = new HashSet<Zubartdoku>();
         }
 
-        public int AufbTypId { get; set; }
         public string AufbTypBez { get; set; }
+        public int AufbTypId { get; set; }
 
         public ICollection<Zubartdoku> Zubartdoku { get; set; }
     }

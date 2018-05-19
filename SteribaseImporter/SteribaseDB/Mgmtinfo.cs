@@ -7,7 +7,7 @@ namespace SteribaseImporter.SteribaseDB
     {
         public string VersionNo { get; set; }
         public string ExportId { get; set; }
-        public string ExportDate { get; set; }
+        public DateTime ExportDate { get; set; }
         public string Theme { get; set; }
         public int ImportStatId { get; set; }
         public int SenderExtApplId { get; set; }
