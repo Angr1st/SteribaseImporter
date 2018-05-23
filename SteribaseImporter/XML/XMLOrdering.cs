@@ -7,13 +7,19 @@ namespace SteribaseImporter.XML
 {
     class XMLOrdering
     {
-        public IEnumerable<string> GetOrderingList(string filePath) => LoadLines(filePath);
+        public IEnumerable<(string nodeName,int orderingNumber)> GetOrderingList(string filePath) => LoadLines(filePath);
 
-        private static IEnumerable<string> LoadLines(string fileName)
+        private static List<(string nodeName, int orderingNumber)> LoadLines(string fileName)
         {
             try
             {
-                return File.ReadAllLines(fileName).Select(line => line.TrimEnd(';'));
+                var resultList = new List<(string nodeName, int orderingNumber)>();
+                var lines = File.ReadAllLines(fileName);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                   resultList.Add((lines[i].TrimEnd(';'), i));
+                }
+                return resultList;
             }
             catch (Exception e)
             {
