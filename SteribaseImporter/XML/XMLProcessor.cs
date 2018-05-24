@@ -32,7 +32,7 @@ namespace SteribaseImporter.XML
             return resultList.Select(result => result ? (1, 0) : (0, 1)).Aggregate((old, next) => (old.Item1 + next.Item1, old.Item2 + next.Item2));
         }
 
-        private bool TransformNode(XmlNode xmlNode)
+        private string TransformNode(XmlNode xmlNode)
         {
             //dynamic instance = System.Activator.CreateInstance();
             var searchString = $"SteribaseImporter.XML.Xml2CSharp.{xmlNode.Name}";
