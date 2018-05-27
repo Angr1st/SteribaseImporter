@@ -10,7 +10,8 @@ namespace SteribaseImporter
         newFolder,
         processedFolder,
         failedFolder,
-        order
+        order,
+        dbstructure
     }
 
     class ConfigHandler
