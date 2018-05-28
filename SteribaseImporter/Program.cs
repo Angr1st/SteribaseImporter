@@ -8,10 +8,12 @@ namespace SteribaseImporter
     {
         static void Main(string[] args)
         {
-            XMLMover mover = new XMLMover();
-            XMLOrdering ordering = new XMLOrdering();
-            XMLProcessor processor = new XMLProcessor(ordering.GetOrderingList(ConfigHandler.GetConfigValue(ConfigValues.order)), new SteribaseDB.SteribaseContext());
-            var importResults = mover.LoadAllNewXmls().Select(doc => processor.ImportXml(doc)).ToList();
+            DB.DBStructureLoader dBStructureLoader = new DB.DBStructureLoader();
+           var result = dBStructureLoader.LoadDBStructure();
+            //XMLMover mover = new XMLMover();
+            //XMLOrdering ordering = new XMLOrdering();
+            //XMLProcessor processor = new XMLProcessor(ordering.GetOrderingList(ConfigHandler.GetConfigValue(ConfigValues.order)), new SteribaseDB.SteribaseContext());
+            //var importResults = mover.LoadAllNewXmls().Select(doc => processor.ImportXml(doc)).ToList();
             Console.WriteLine("Hello World!");
         }
     }

@@ -19,9 +19,9 @@ namespace SteribaseImporter.DB
     {
         unkown,
         varchar,
-        integer,
+        @int,
         @double,
-        dateTime
+        DateTime
     }
 
     class DBField
@@ -117,13 +117,13 @@ namespace SteribaseImporter.DB
                 case DBFieldType.varchar:
                     dataType = $"varchar({(Length < 10 ? Length : 200)})";
                     break;
-                case DBFieldType.integer:
+                case DBFieldType.@int:
                     dataType = "int";
                     break;
                 case DBFieldType.@double:
                     dataType = "double";
                     break;
-                case DBFieldType.dateTime:
+                case DBFieldType.DateTime:
                     dataType = "DateTime";
                     break;
                 default:
