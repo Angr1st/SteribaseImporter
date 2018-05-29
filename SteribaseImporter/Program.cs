@@ -10,10 +10,10 @@ namespace SteribaseImporter
         {
             DB.DBStructureLoader dBStructureLoader = new DB.DBStructureLoader();
            var result = dBStructureLoader.LoadDBStructure();
-            //XMLMover mover = new XMLMover();
-            //XMLOrdering ordering = new XMLOrdering();
-            //XMLProcessor processor = new XMLProcessor(ordering.GetOrderingList(ConfigHandler.GetConfigValue(ConfigValues.order)), new SteribaseDB.SteribaseContext());
-            //var importResults = mover.LoadAllNewXmls().Select(doc => processor.ImportXml(doc)).ToList();
+            XMLMover mover = new XMLMover();
+            XMLOrdering ordering = new XMLOrdering();
+            XMLProcessor processor = new XMLProcessor(ordering.GetOrderingList(ConfigHandler.GetConfigValue(ConfigValues.order)), result,new MySql.Data.MySqlClient.MySqlConnection());
+            var importResults = mover.LoadAllNewXmls().Select(doc => processor.ImportXml(doc)).ToList();
             Console.WriteLine("Hello World!");
         }
     }
