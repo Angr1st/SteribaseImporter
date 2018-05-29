@@ -12,9 +12,11 @@ namespace SteribaseImporter.DB
         public string String { get; private set; }
         public int Length { get; private set; }
         public DBFieldType DBFieldType { get; }
+        public string Name { get; }
 
-        public DBFieldEntry(DBFieldType fieldType = DBFieldType.unkown)
+        public DBFieldEntry(string name, DBFieldType fieldType = DBFieldType.unkown)
         {
+            Name = name;
             DBFieldType = fieldType;
         }
 
