@@ -10,15 +10,22 @@ namespace SteribaseImporter.DB
         public string Name { get; }
         public List<DBField> DBFields { get; }
         public (List<DBField> primaryKeyFields, DBFieldKeyType pkType) PrimaryKey { get { return DBFields.Count(fields => fields.DBFieldKeyType == DBFieldKeyType.PrimaryKey) == 1 ? (DBFields.FindAll(x => x.DBFieldKeyType == DBFieldKeyType.PrimaryKey), DBFieldKeyType.PrimaryKey) : DBFields.Count(fields => fields.DBFieldKeyType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) > 1 ? (DBFields.FindAll(x => x.DBFieldKeyType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)), DBFieldKeyType.ClusteredPrimaryKey) : default; } }
-        public List<DBRow> Rows { get; }
+        public List<DBRow> Rows { get; private set; }
 
         public DBTable(string name, List<DBField> fields)
         {
             Name = name;
             DBFields = fields;
+            Rows = new List<DBRow>();
         }
 
         public override string ToString() => $"Create table {Name} ({String.Join(",", DBFields)}{KeyStatements()})";
+
+        public bool AddRow(DBRow row)
+        {
+           Rows.Add(row);
+            return true;
+        }
 
         private string KeyStatements()
         {
