@@ -57,6 +57,33 @@ namespace SteribaseImporter.DB
             return this;
         }
 
+        public (string name, string value) PrintForInsert()
+        {
+            return (Name, TransformForStringRepresentation());
+
+            string TransformForStringRepresentation()
+            {
+                switch (DBFieldType)
+                {
+                    case DBFieldType.varchar:
+                        return String;
+
+                    case DBFieldType.@int:
+                        return Int.ToString();
+
+                    case DBFieldType.@double:
+                        return Double.ToString();
+
+                    case DBFieldType.DateTime:
+                        return DateTimeOffset.ToString("u");
+
+                    case DBFieldType.unkown:
+                    default:
+                        throw new Exception("The DBFieldType is unkown this should not be!");
+                }
+            }
+        }
+
         public override string ToString()
         {
             return $"{Name}";
