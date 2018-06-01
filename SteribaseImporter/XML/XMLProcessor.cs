@@ -28,6 +28,7 @@ namespace SteribaseImporter.XML
             var elements = xmlDocument.LastChild.ChildNodes;
 
             var resultList = elements.ToXmlNodeList().OrderBy(item => ElementOrderList[item.Name]).Select(items => TransformNode(items)).ToList();
+            
             return resultList.Select(result => result ? (1, 0) : (0, 1)).Aggregate((old, next) => (old.Item1 + next.Item1, old.Item2 + next.Item2));
         }
 

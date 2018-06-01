@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using MySql.Data.MySqlClient;
 
 namespace SteribaseImporter.DB
 {
@@ -25,6 +25,27 @@ namespace SteribaseImporter.DB
         {
            Rows.Add(row);
             return true;
+        }
+
+        public List<MySqlCommand> CreateCommands()
+        {
+            Rows.Select(row => (DBFields.Select(fields => (fields.Name, fields.DBFieldKeyType)),row.DBFieldEntries.Select(fieldEntry => fieldEntry.PrintForInsert()))).Select()
+        } 
+
+        private MySqlCommand CreateCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name,string value)> entrys) touple)
+        {
+            if (touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))
+            {
+                var newCommand = new MySqlCommand(FormatCommand(touple));
+                //TODO:Add all entrys as parameters!
+            }
+
+
+        }
+
+        private string FormatCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
+        {
+            return $"INSERT Into {Name} ({touple.entrys.Select(entry => entry.name)} Values ({touple.entrys.Select(entry => $"@{entry.name}")}));";
         }
 
         private string KeyStatements()
