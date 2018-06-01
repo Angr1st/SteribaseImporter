@@ -56,5 +56,10 @@ namespace SteribaseImporter.DB
             }
             return this;
         }
+
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }
