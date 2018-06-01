@@ -72,7 +72,7 @@ namespace SteribaseImporter.XML
                 }
             }
 
-            return true;
+            return dbTable.AddRow(new DBRow(dbRow));
 
             DBTable FindDBTable(string name) => DBTables.Where(table => table.Name == name).First();
 
