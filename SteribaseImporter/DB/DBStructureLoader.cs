@@ -14,7 +14,7 @@ namespace SteribaseImporter.DB
 
             DBTable CreateDBTable(string[] splitLine)
             {
-                if (splitLine.Length <= 2)
+                if (splitLine.Length <= 3)
                 {
                     throw new ArgumentException("The line does not contain enough arguments");
                 }
@@ -26,16 +26,16 @@ namespace SteribaseImporter.DB
 
             DBField CreateDBField(string[] subSplitLine)
             {
-                if (subSplitLine.Length <= 2)
+                if (subSplitLine.Length <= 3)
                 {
                     throw new ArgumentException("The subline does not contain enough arguments");
                 }
 
-                if (subSplitLine.Length == 3)
+                if (subSplitLine.Length == 4)
                 {
                     return new DBField(subSplitLine.First(), ParseDBFieldType(subSplitLine.Last()), ParseDBFieldKeyType(subSplitLine.Skip(1).First()));
                 }
-                else if (subSplitLine.Length == 4)
+                else if (subSplitLine.Length == 5)
                 {
                     return new DBField(subSplitLine.First(), ParseDBFieldType(subSplitLine.SkipLast(1).Last(),int.Parse(subSplitLine.Last())), ParseDBFieldKeyType(subSplitLine.Skip(1).First()));
                 }
@@ -70,13 +70,17 @@ namespace SteribaseImporter.DB
 
                 DBFieldKeyType ParseDBFieldKeyType(string partOfLine)
                 {
-                    if (partOfLine == "null")
+                    if (partOfLine == DBFieldKeyType.Value.ToString())
                     {
                         return DBFieldKeyType.Value;
                     }
-                    else if (partOfLine == "notnull")
+                    else if (partOfLine == DBFieldKeyType.PrimaryKey.ToString())
                     {
                         return DBFieldKeyType.PrimaryKey;
+                    }
+                    else if ((partOfLine == DBFieldKeyType.ClusteredPrimaryKey.ToString()))
+                    {
+                        return DBFieldKeyType.ClusteredPrimaryKey;
                     }
                     else
                     {
