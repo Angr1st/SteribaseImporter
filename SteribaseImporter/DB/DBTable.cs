@@ -27,6 +27,12 @@ namespace SteribaseImporter.DB
             return true;
         }
 
+        public bool DeleteAllRows()
+        {
+            Rows = new List<DBRow>();
+            return true;
+        }
+
         public IEnumerable<MySqlCommand> CreateCommands() => Rows.Select(row => (DBFields.Select(fields => (fields.Name.ToLower(), fields.DBFieldKeyType)), row.DBFieldEntries.Where(entry => entry.DBFieldType != DBFieldType.unkown).Select(fieldEntry => fieldEntry.PrintForInsert()))).Select(touple => CreateCommand(touple));
 
         private MySqlCommand CreateCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
