@@ -32,6 +32,7 @@ namespace SteribaseImporter.XML
             DBContext.Open();
             var result = DBTables.SelectMany(table => table.CreateCommands().Select(command => ExecuteMySQLCommand(command))).Aggregate((old, newValue) => (old.erfolgreich + newValue.erfolgreich, old.fehlerhaft + newValue.fehlerhaft, old.failedCommands.Concat(newValue.failedCommands).ToList()));
             DBContext.Close();
+            DBTables.Select(table => table.DeleteAllRows()).ToList();
             return result;
         }
 
