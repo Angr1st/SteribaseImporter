@@ -66,7 +66,7 @@ namespace SteribaseImporter.DB
                 switch (DBFieldType)
                 {
                     case DBFieldType.varchar:
-                        return $"'{String}'";
+                        return String;
 
                     case DBFieldType.@int:
                         return Int.ToString();
