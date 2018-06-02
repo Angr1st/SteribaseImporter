@@ -24,7 +24,7 @@ namespace SteribaseImporter.XML
             DBContext = steribaseContext;
         }
 
-        public (int erfolgreich, int fehlerhaft, List<MySqlCommand> failedCommand) ImportXml(XmlDocument xmlDocument)
+        public (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message)> failedCommand) ImportXml(XmlDocument xmlDocument)
         {
             var elements = xmlDocument.LastChild.ChildNodes;
 
@@ -35,16 +35,16 @@ namespace SteribaseImporter.XML
             return result;
         }
 
-        private (int erfolgreich, int fehlerhaft, List<MySqlCommand> failedCommands) ExecuteMySQLCommand(MySqlCommand command)
+        private (int erfolgreich, int fehlerhaft, List<(MySqlCommand command,string message)> failedCommands) ExecuteMySQLCommand(MySqlCommand command)
         {
             try
             {
                 command.Connection = DBContext;
-                return (command.ExecuteNonQuery(), 0, new List<MySqlCommand>());
+                return (command.ExecuteNonQuery(), 0, new List<(MySqlCommand command, string message)>());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return (0, 1, new List<MySqlCommand>() { command });
+                return (0, 1, new List<(MySqlCommand command, string message)>() { (command, ex.Message) });
             }
         }
 

@@ -31,15 +31,11 @@ namespace SteribaseImporter.DB
 
         private MySqlCommand CreateCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
         {
-            if (touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))
+            if ((touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))||(touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool)))
             {
                 var newCommand = new MySqlCommand(FormatCommand(touple));
                 AddParameters(newCommand, touple.entrys);
                 return newCommand;
-            }
-            else if (touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))
-            {
-
             }
             else
             {
@@ -49,12 +45,12 @@ namespace SteribaseImporter.DB
 
         private void AddParameters(MySqlCommand command, IEnumerable<(string name, string value)> entrys)
         {
-            entrys.Select(entry => command.Parameters.AddWithValue($"@{entry.name}", entry.value));
+            entrys.Select(entry => command.Parameters.AddWithValue($"@{entry.name}", entry.value)).ToList();
         }
 
         private string FormatCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
         {
-            return $"INSERT Into {Name} ({touple.entrys.Select(entry => entry.name)} Values ({touple.entrys.Select(entry => $"@{entry.name}")}));";
+            return $"INSERT Into {Name.ToLower()} ({String.Join(",",touple.entrys.Select(entry => entry.name))}) Values ({String.Join(",", touple.entrys.Select(entry => $"@{entry.name}"))});";
         }
 
         private string KeyStatements()
