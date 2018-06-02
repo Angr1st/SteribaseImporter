@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using MySql.Data.MySqlClient;
 using SteribaseImporter.DB;
 
 namespace SteribaseImporter.XML
@@ -23,13 +24,28 @@ namespace SteribaseImporter.XML
             DBContext = steribaseContext;
         }
 
-        public (int erfolgreich, int fehlerhaft) ImportXml(XmlDocument xmlDocument)
+        public (int erfolgreich, int fehlerhaft, List<MySqlCommand> failedCommand) ImportXml(XmlDocument xmlDocument)
         {
             var elements = xmlDocument.LastChild.ChildNodes;
 
             var resultList = elements.ToXmlNodeList().OrderBy(item => ElementOrderList[item.Name]).Select(items => TransformNode(items)).ToList();
-            
-            return resultList.Select(result => result ? (1, 0) : (0, 1)).Aggregate((old, next) => (old.Item1 + next.Item1, old.Item2 + next.Item2));
+            DBContext.Open();
+            var result = DBTables.SelectMany(table => table.CreateCommands().Select(command => ExecuteMySQLCommand(command))).Aggregate((old, newValue) => (old.erfolgreich + newValue.erfolgreich, old.fehlerhaft + newValue.fehlerhaft, old.failedCommands.Concat(newValue.failedCommands).ToList()));
+            DBContext.Close();
+            return result;
+        }
+
+        private (int erfolgreich, int fehlerhaft, List<MySqlCommand> failedCommands) ExecuteMySQLCommand(MySqlCommand command)
+        {
+            try
+            {
+                command.Connection = DBContext;
+                return (command.ExecuteNonQuery(), 0, new List<MySqlCommand>());
+            }
+            catch (Exception)
+            {
+                return (0, 1, new List<MySqlCommand>() { command });
+            }
         }
 
         private bool TransformNode(XmlNode xmlNode)

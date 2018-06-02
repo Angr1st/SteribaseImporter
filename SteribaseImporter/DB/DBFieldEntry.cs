@@ -59,7 +59,7 @@ namespace SteribaseImporter.DB
 
         public (string name, string value) PrintForInsert()
         {
-            return (Name, TransformForStringRepresentation());
+            return (Name.ToLower(), TransformForStringRepresentation());
 
             string TransformForStringRepresentation()
             {
