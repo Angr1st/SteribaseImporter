@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using SteribaseImporter.DB;
 
 namespace SteribaseImporter.XML
 {
@@ -29,9 +30,18 @@ namespace SteribaseImporter.XML
             return returnValue;
         }
 
-        public string CreateErrorLog((int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message)> failedCommand) results)
+        public string CreateErrorLog((int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) results)
         {
-            throw new NotImplementedException();
+            var now = DateTime.Now;
+            var failedFilePath = Path.Combine(ConfigHandler.GetConfigValue(ConfigValues.failedFolder), $"failed_{now.Year}-{now.DayOfYear}-{now.Hour}.{now.Minute}.{now.Second}.csv");
+            File.WriteAllLines(failedFilePath, results.failedCommand.Select(command => $"Error:{command.message},Failed Command:{command.command.CommandText},Update Command:{CreateUpdateCommand(command.fieldsEntrys)}"));
+            return failedFilePath;
+        }
+
+        private string CreateUpdateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldEntrys)
+        {
+            var pks = fieldEntrys.fields.Where(field => field.fieldType == DBFieldKeyType.ClusteredPrimaryKey || field.fieldType == DBFieldKeyType.PrimaryKey).SelectMany(field => fieldEntrys.entrys.Where(entry => entry.name == field.fieldName));
+            return $"Update {fieldEntrys.tableName} SET {String.Join(",", fieldEntrys.entrys.Except(pks).Select(entry => $"{entry.name}={entry.value}"))} WHERE {String.Join(" and ", pks.Select(pk => $"{pk.name}={pk.value}"))};";
         }
 
         public string GetFileName(string filePath) => filePath.Split(Path.DirectorySeparatorChar).Last();

@@ -33,15 +33,15 @@ namespace SteribaseImporter.DB
             return true;
         }
 
-        public IEnumerable<MySqlCommand> CreateCommands() => Rows.Select(row => (DBFields.Select(fields => (fields.Name.ToLower(), fields.DBFieldKeyType)), row.DBFieldEntries.Where(entry => entry.DBFieldType != DBFieldType.unkown).Select(fieldEntry => fieldEntry.PrintForInsert()))).Select(touple => CreateCommand(touple));
+        public IEnumerable<(MySqlCommand command, (string tableName,IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys))> CreateCommands() => Rows.Select(row => (Name.ToLower(),DBFields.Select(fields => (fields.Name.ToLower(), fields.DBFieldKeyType)), row.DBFieldEntries.Where(entry => entry.DBFieldType != DBFieldType.unkown).Select(fieldEntry => fieldEntry.PrintForInsert()))).Select(touple => CreateCommand(touple));
 
-        private MySqlCommand CreateCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
+        private(MySqlCommand command, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys)) CreateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
         {
             if ((touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))||(touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool)))
             {
                 var newCommand = new MySqlCommand(FormatCommand(touple));
                 AddParameters(newCommand, touple.entrys);
-                return newCommand;
+                return (newCommand, touple);
             }
             else
             {
@@ -54,9 +54,9 @@ namespace SteribaseImporter.DB
             entrys.Select(entry => command.Parameters.AddWithValue($"@{entry.name}", entry.value)).ToList();
         }
 
-        private string FormatCommand((IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
+        private string FormatCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
         {
-            return $"INSERT Into {Name.ToLower()} ({String.Join(",",touple.entrys.Select(entry => entry.name))}) Values ({String.Join(",", touple.entrys.Select(entry => $"@{entry.name}"))});";
+            return $"INSERT Into {touple.tableName} ({String.Join(",",touple.entrys.Select(entry => entry.name))}) Values ({String.Join(",", touple.entrys.Select(entry => $"@{entry.name}"))});";
         }
 
         private string KeyStatements()

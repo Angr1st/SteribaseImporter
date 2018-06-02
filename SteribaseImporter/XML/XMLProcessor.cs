@@ -24,7 +24,7 @@ namespace SteribaseImporter.XML
             DBContext = steribaseContext;
         }
 
-        public (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message)> failedCommand) ImportXml(XmlDocument xmlDocument)
+        public (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) ImportXml(XmlDocument xmlDocument)
         {
             var elements = xmlDocument.LastChild.ChildNodes;
 
@@ -36,16 +36,16 @@ namespace SteribaseImporter.XML
             return result;
         }
 
-        private (int erfolgreich, int fehlerhaft, List<(MySqlCommand command,string message)> failedCommands) ExecuteMySQLCommand(MySqlCommand command)
+        private (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommands) ExecuteMySQLCommand((MySqlCommand command, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys) commandInfo)
         {
             try
             {
-                command.Connection = DBContext;
-                return (command.ExecuteNonQuery(), 0, new List<(MySqlCommand command, string message)>());
+                commandInfo.command.Connection = DBContext;
+                return (commandInfo.command.ExecuteNonQuery(), 0, new List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)>());
             }
             catch (Exception ex)
             {
-                return (0, 1, new List<(MySqlCommand command, string message)>() { (command, ex.Message) });
+                return (0, 1, new List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)>() { (commandInfo.command, ex.Message, commandInfo.fieldsEntrys) });
             }
         }
 
