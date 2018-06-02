@@ -92,23 +92,6 @@ namespace SteribaseImporter.XML
             return dbTable.AddRow(new DBRow(dbRow));
 
             DBTable FindDBTable(string name) => DBTables.Where(table => table.Name == name).First();
-
-            string FirstUpperCaseRestLowerCase(string name)
-            {
-                var initial = name.Take(1).First().ToString().ToUpper();
-                var restOfString = StringBuilderChars(name.ToLower().Skip(1));
-                return StringBuilderChars(restOfString.Prepend(initial.ToCharArray().First()));
-            }
-
-            string StringBuilderChars(IEnumerable<char> charSequence)
-            {
-                var sb = new StringBuilder();
-                foreach (var c in charSequence)
-                {
-                    sb.Append(c);
-                }
-                return sb.ToString();
-            }
         }
 
     }
