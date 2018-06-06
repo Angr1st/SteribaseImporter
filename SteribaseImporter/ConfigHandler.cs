@@ -11,7 +11,9 @@ namespace SteribaseImporter
         processedFolder,
         failedFolder,
         order,
-        dbstructure
+        dbstructure,
+        table,
+        field
     }
 
     class ConfigHandler
