@@ -13,7 +13,8 @@ namespace SteribaseImporter
         order,
         dbstructure,
         table,
-        field
+        field,
+        pdfName
     }
 
     class ConfigHandler
