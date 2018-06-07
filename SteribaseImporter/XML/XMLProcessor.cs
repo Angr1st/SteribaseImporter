@@ -24,16 +24,29 @@ namespace SteribaseImporter.XML
             DBContext = steribaseContext;
         }
 
-        public (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) ImportXml(XmlDocument xmlDocument)
+        public (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) ImportXml(XmlDocument xmlDocument, string fileName, int id)
         {
+            var pdfImportId = ConfigHandler.GetConfigValue(ConfigValues.field);
             var elements = xmlDocument.LastChild.ChildNodes;
 
-            var resultList = elements.ToXmlNodeList().OrderBy(item => ElementOrderList[item.Name]).Select(items => TransformNode(items)).ToList();
+            var resultList = elements.ToXmlNodeList().Append(CreatePdfImportNode()).OrderBy(item => ElementOrderList[item.Name]).Select(items => TransformNode(items, id, pdfImportId)).ToList();
             DBContext.Open();
             var result = DBTables.SelectMany(table => table.CreateCommands().Select(command => ExecuteMySQLCommand(command))).Aggregate((old, newValue) => (old.erfolgreich + newValue.erfolgreich, old.fehlerhaft + newValue.fehlerhaft, old.failedCommands.Concat(newValue.failedCommands).ToList()));
             DBContext.Close();
             DBTables.Select(table => table.DeleteAllRows()).ToList();
             return result;
+
+            XmlNode CreatePdfImportNode()
+            {
+                var rootElement = xmlDocument.CreateElement(ConfigHandler.GetConfigValue(ConfigValues.table));
+                var pdfName = xmlDocument.CreateElement(ConfigHandler.GetConfigValue(ConfigValues.pdfName));
+                var pdfId = xmlDocument.CreateElement(pdfImportId);
+                pdfName.InnerText = fileName;
+                pdfId.InnerText = id.ToString();
+                rootElement.AppendChild(pdfId);
+                rootElement.AppendChild(pdfName);
+                return rootElement;
+            }
         }
 
         private (int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommands) ExecuteMySQLCommand((MySqlCommand command, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys) commandInfo)
@@ -49,7 +62,7 @@ namespace SteribaseImporter.XML
             }
         }
 
-        private bool TransformNode(XmlNode xmlNode)
+        private bool TransformNode(XmlNode xmlNode, int id, string pdfName)
         {
             var dbTable = FindDBTable(xmlNode.Name);
             var innerNodeList = xmlNode.ChildNodes.ToXmlNodeList();
@@ -57,7 +70,11 @@ namespace SteribaseImporter.XML
             foreach (var item in dbTable.DBFields)
             {
                 var innerNode = innerNodeList.Where(node => node.Name == item.Name).FirstOrDefault();
-                if (innerNode == null)
+                if (innerNode == null && item.Name == pdfName)
+                {
+                    dbRow.Add(new DBFieldEntry(item.Name, DBFieldType.@int).SetInt(id));
+                }
+                else if (innerNode == null)
                 {
                     dbRow.Add(new DBFieldEntry(item.Name));
                 }
