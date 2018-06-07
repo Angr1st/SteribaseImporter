@@ -7,7 +7,7 @@ namespace SteribaseImporter.Query
 {
     static class QueryTask
     {
-        public static int GetNextIndex(MySqlConnection sqlConnection)
+        public static int GetHighestId(MySqlConnection sqlConnection)
         {
             int result = 0;
             var table = ConfigHandler.GetConfigValue(ConfigValues.table);
@@ -26,9 +26,9 @@ namespace SteribaseImporter.Query
             }
             catch (Exception)
             {
-             //Catch Exception
+                sqlConnection.Close();
             }
-            return result++;
+            return result;
         }
     }
 }
