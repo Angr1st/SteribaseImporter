@@ -20,7 +20,10 @@ namespace SteribaseImporter
             XMLOrdering ordering = new XMLOrdering();
             XMLProcessor processor = new XMLProcessor(ordering.GetOrderingList(ConfigHandler.GetConfigValue(ConfigValues.order)), result, dbConn);
             var importResults = mover.LoadAllNewXmls().Select(doc => { nextID = nextID + 1; return (processor.ImportXml(doc.xmlDoc, mover.GetFileName(doc.filePath), nextID), doc.filePath); }).Select(import => { WriteLine($"Import of {mover.GetFileName(import.filePath)}; Successfull:{import.Item1.erfolgreich}; Failed:{import.Item1.fehlerhaft}"); return import; }).Select(import => (mover.MoveFile(import.filePath), import)).Select(import => mover.CreateErrorLog(import.import.Item1)).ToList();
+#if DEBUG
             ReadLine();
+#endif
+            
         }
     }
 }
