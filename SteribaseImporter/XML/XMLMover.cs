@@ -32,6 +32,10 @@ namespace SteribaseImporter.XML
 
         public string CreateErrorLog((int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) results)
         {
+            if (results.fehlerhaft == 0)
+            {
+                return string.Empty;
+            }
             var now = DateTime.Now;
             var failedFilePath = Path.Combine(ConfigHandler.GetConfigValue(ConfigValues.failedFolder), $"failed_{now.Year}-{now.DayOfYear}-{now.Hour}.{now.Minute}.{now.Second}.csv");
             File.WriteAllLines(failedFilePath, results.failedCommand.Select(command => $"Error:{command.message},Failed Command:{command.command.CommandText},Update Command:{CreateUpdateCommand(command.fieldsEntrys)}"));
