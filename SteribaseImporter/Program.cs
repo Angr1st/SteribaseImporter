@@ -12,6 +12,8 @@ namespace SteribaseImporter
     {
         static void Main(string[] args)
         {
+            try
+            {
             DB.DBStructureLoader dBStructureLoader = new DB.DBStructureLoader();
             var result = dBStructureLoader.LoadDBStructure();
             var dbConn = new MySql.Data.MySqlClient.MySqlConnection(ConfigurationManager.ConnectionStrings["steribaseDB"].ConnectionString);
@@ -23,7 +25,11 @@ namespace SteribaseImporter
 #if DEBUG
             ReadLine();
 #endif
-            
+            }
+            catch (Exception e)
+            {
+                Logger.LogException("Programm expierienced a exception.", e);
+            }
         }
     }
 }
