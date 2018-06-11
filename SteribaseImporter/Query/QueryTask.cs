@@ -24,8 +24,9 @@ namespace SteribaseImporter.Query
                 rdr.Close();
                 sqlConnection.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.LogException("MySQL could not open a connection or the table wasnt well formed!", e);
                 sqlConnection.Close();
             }
             return result;
