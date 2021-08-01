@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SteribaseImporter.DB
 {
@@ -15,6 +14,7 @@ namespace SteribaseImporter.DB
         ClusteredPrimaryKey = 8
     }
 
+    [Flags]
     public enum DBFieldType
     {
         unkown,
@@ -60,7 +60,7 @@ namespace SteribaseImporter.DB
             }
             else
             {
-                DBFieldKeyType = DBFieldKeyType | DBFieldKeyType.PrimaryKey;
+                DBFieldKeyType |= DBFieldKeyType.PrimaryKey;
             }
         }
 
@@ -74,7 +74,7 @@ namespace SteribaseImporter.DB
             }
             else
             {
-                DBFieldKeyType = DBFieldKeyType | DBFieldKeyType.ForeignKey;
+                DBFieldKeyType |= DBFieldKeyType.ForeignKey;
             }
         }
 

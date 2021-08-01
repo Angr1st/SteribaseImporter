@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace SteribaseImporter.DB
 {
-    class DBStructureLoader
+    static class DBStructureLoader
     {
-        public List<DBTable> LoadDBStructure()
+        public static List<DBTable> LoadDBStructure()
         {
             return File.ReadAllLines(ConfigHandler.GetConfigValue(ConfigValues.dbstructure)).Select(Line => CreateDBTable(Line.Split(';'))).ToList();
 
@@ -21,7 +20,7 @@ namespace SteribaseImporter.DB
 
                 var dbTableName = splitLine.First();
 
-                return new DBTable(dbTableName, splitLine.Where(Line => !String.IsNullOrWhiteSpace(Line)).Skip(1).Select(subLine => CreateDBField(subLine.Split(','))).ToList());
+                return new DBTable(dbTableName, splitLine.Where(Line => !string.IsNullOrWhiteSpace(Line)).Skip(1).Select(subLine => CreateDBField(subLine.Split(','))).ToList());
             }
 
             DBField CreateDBField(string[] subSplitLine)
@@ -84,7 +83,7 @@ namespace SteribaseImporter.DB
                     }
                     else
                     {
-                        throw new ArgumentNullException("Could not parse the DBFieldKeyType because the supllied arguement was null, empty or all whitespace!");
+                        throw new ArgumentNullException("Could not parse the DBFieldKeyType because the supplied arguement was null, empty or all whitespace!");
                     }
                 }
             }

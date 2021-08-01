@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SteribaseImporter.DB
 {
@@ -63,24 +61,14 @@ namespace SteribaseImporter.DB
 
             string TransformForStringRepresentation()
             {
-                switch (DBFieldType)
+                return DBFieldType switch
                 {
-                    case DBFieldType.varchar:
-                        return String;
-
-                    case DBFieldType.@int:
-                        return Int.ToString();
-
-                    case DBFieldType.@double:
-                        return Double.ToString();
-
-                    case DBFieldType.DateTime:
-                        return DateTimeOffset.ToString("u");
-
-                    case DBFieldType.unkown:
-                    default:
-                        throw new Exception("The DBFieldType is unkown this should not be!");
-                }
+                    DBFieldType.varchar => String,
+                    DBFieldType.@int => Int.ToString(),
+                    DBFieldType.@double => Double.ToString(),
+                    DBFieldType.DateTime => DateTimeOffset.ToString("u"),
+                    _ => throw new Exception("The DBFieldType is unkown this should not be!"),
+                };
             }
         }
 

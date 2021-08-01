@@ -26,7 +26,7 @@ namespace SteribaseImporter.XML
         public string MoveFile(string filePath)
         {
             var returnValue = Path.Combine(ConfigHandler.GetConfigValue(ConfigValues.processedFolder), GetFileName(filePath));
-            File.Move(filePath,returnValue);
+            File.Move(filePath, returnValue);
             return returnValue;
         }
 
