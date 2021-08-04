@@ -23,14 +23,14 @@ namespace SteribaseImporter.XML
         }
 
 
-        public string MoveFile(string filePath)
+        public static string MoveFile(string filePath)
         {
             var returnValue = Path.Combine(ConfigHandler.GetConfigValue(ConfigValues.processedFolder), GetFileName(filePath));
             File.Move(filePath, returnValue);
             return returnValue;
         }
 
-        public string CreateErrorLog((int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) results)
+        public static string CreateErrorLog((int erfolgreich, int fehlerhaft, List<(MySqlCommand command, string message, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldsEntrys)> failedCommand) results)
         {
             if (results.fehlerhaft == 0)
             {
@@ -42,12 +42,12 @@ namespace SteribaseImporter.XML
             return failedFilePath;
         }
 
-        private string CreateUpdateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldEntrys)
+        private static string CreateUpdateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) fieldEntrys)
         {
             var pks = fieldEntrys.fields.Where(field => field.fieldType == DBFieldKeyType.ClusteredPrimaryKey || field.fieldType == DBFieldKeyType.PrimaryKey).SelectMany(field => fieldEntrys.entrys.Where(entry => entry.name == field.fieldName));
             return $"Update {fieldEntrys.tableName} SET {String.Join(",", fieldEntrys.entrys.Except(pks).Select(entry => $"{entry.name}={entry.value}"))} WHERE {String.Join(" and ", pks.Select(pk => $"{pk.name}={pk.value}"))};";
         }
 
-        public string GetFileName(string filePath) => filePath.Split(Path.DirectorySeparatorChar).Last();
+        public static string GetFileName(string filePath) => filePath.Split(Path.DirectorySeparatorChar).Last();
     }
 }

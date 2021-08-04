@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Serilog;
+﻿using Serilog;
+using System;
 
 namespace SteribaseImporter
 {
     class Logger
     {
-        private static Serilog.Core.Logger GetLogger = new LoggerConfiguration()
+        private static readonly Serilog.Core.Logger GetLogger = new LoggerConfiguration()
         .WriteTo.File("log.txt")
         .CreateLogger();
 
         public static void LogException(string logText, Exception exception)
         {
             GetLogger.Error(exception, logText);
+        }
+
+        public static void LogInformation(string logText)
+        {
+            GetLogger.Information(logText);
         }
     }
 }

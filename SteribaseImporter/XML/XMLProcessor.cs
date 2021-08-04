@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using SteribaseImporter.DB;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
 
 namespace SteribaseImporter.XML
 {
     class XMLProcessor
     {
         private Dictionary<string, int> ElementOrderList { get; }
-        private MySql.Data.MySqlClient.MySqlConnection DBContext { get; }
+        private MySqlConnection DBContext { get; }
 
         private List<DBTable> DBTables { get; }
 

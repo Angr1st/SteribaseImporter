@@ -9,18 +9,29 @@ namespace SteribaseImporter.DB
     {
         public static List<DBTable> LoadDBStructure()
         {
-            return File.ReadAllLines(ConfigHandler.GetConfigValue(ConfigValues.dbstructure)).Select(Line => CreateDBTable(Line.Split(';'))).ToList();
+            return File
+                .ReadAllLines(ConfigHandler.GetConfigValue(ConfigValues.dbstructure))
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .Select(Line => CreateDBTable(Line.Split(';', StringSplitOptions.RemoveEmptyEntries)))
+                .ToList();
 
             DBTable CreateDBTable(string[] splitLine)
             {
-                if (splitLine.Length <= 3)
+                if (splitLine.Length == 0)
                 {
+                    Logger.LogInformation($"One line inside the {ConfigHandler.GetConfigValue(ConfigValues.dbstructure)} file was empty!");
+                    return null;
+                }
+
+                if (splitLine.Length < 3)
+                {
+                    Logger.LogInformation($"Line Content: {string.Join(';', splitLine)}");
                     throw new ArgumentException("The line does not contain enough arguments");
                 }
 
                 var dbTableName = splitLine.First();
 
-                return new DBTable(dbTableName, splitLine.Where(Line => !string.IsNullOrWhiteSpace(Line)).Skip(1).Select(subLine => CreateDBField(subLine.Split(','))).ToList());
+                return new DBTable(dbTableName, splitLine.Skip(1).Select(subLine => CreateDBField(subLine.Split(',',StringSplitOptions.RemoveEmptyEntries))).ToList());
             }
 
             DBField CreateDBField(string[] subSplitLine)
