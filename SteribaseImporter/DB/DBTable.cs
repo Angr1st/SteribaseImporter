@@ -46,7 +46,12 @@ namespace SteribaseImporter.DB
             return true;
         }
 
-        public IEnumerable<(MySqlCommand command, (string tableName,IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys))> 
+        public IEnumerable<
+            (MySqlCommand command, 
+                (string tableName,
+                IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, 
+                IEnumerable<(string name, string value)> entrys)
+            )> 
             CreateCommands() 
             => Rows
                 .Select(row 
@@ -73,12 +78,16 @@ namespace SteribaseImporter.DB
             }
         }
 
-        private void AddParameters(MySqlCommand command, IEnumerable<(string name, string value)> entrys)
+        private static void AddParameters(MySqlCommand command, IEnumerable<(string name, string value)> entrys)
         {
             entrys.Select(entry => command.Parameters.AddWithValue($"@{entry.name}", entry.value)).ToList();
         }
 
-        private string FormatCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
+        private static string FormatCommand(
+            (string tableName, 
+            IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, 
+            IEnumerable<(string name, string value)> entrys) touple
+            )
         {
             return $"INSERT Into {touple.tableName} ({String.Join(",",touple.entrys.Select(entry => entry.name))}) Values ({String.Join(",", touple.entrys.Select(entry => $"@{entry.name}"))});";
         }
@@ -92,11 +101,18 @@ namespace SteribaseImporter.DB
 
         private string PrimaryKeyStatement()
         {
-            return PrimaryKey != default(ValueTuple<List<DBField>, DBFieldKeyType>) ? $", Primary key({String.Join(",", PrimaryKey.primaryKeyFields.Select(fields => fields.Name))})" : string.Empty;
+            return PrimaryKey != default(ValueTuple<List<DBField>, DBFieldKeyType>) 
+                ? $", Primary key({String.Join(",", PrimaryKey.primaryKeyFields.Select(fields => fields.Name))})" 
+                : string.Empty;
         }
         private string ForeignKeyStatement()
         {
-            var foreignKeyDefinitions = DBFields.Where(field => field.DBFieldKeyType.HasFlag(DBFieldKeyType.ForeignKey) && field.ReferencesPrimaryKey).Select(field => $"FOREIGN KEY ({field.Name}) REFERENCES {field.ReferencedPrimaryKey.Table.Name}({field.ReferencedPrimaryKey.Field.Name})");
+            var foreignKeyDefinitions = 
+                DBFields
+                .Where(field => 
+                    field.DBFieldKeyType.HasFlag(DBFieldKeyType.ForeignKey) 
+                    && field.ReferencesPrimaryKey)
+                .Select(field => $"FOREIGN KEY ({field.Name}) REFERENCES {field.ReferencedPrimaryKey.Table.Name}({field.ReferencedPrimaryKey.Field.Name})");
             return String.Join(",", foreignKeyDefinitions);
         }
     }
