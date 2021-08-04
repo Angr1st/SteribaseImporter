@@ -64,9 +64,23 @@ namespace SteribaseImporter.DB
                 )
                 .Select(touple => CreateCommand(touple));
 
-        private(MySqlCommand command, (string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys)) CreateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
+        private static (MySqlCommand command, 
+                (string tableName, 
+                IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, 
+                IEnumerable<(string name, string value)> entrys)
+            ) CreateCommand((string tableName, IEnumerable<(string fieldName, DBFieldKeyType fieldType)> fields, IEnumerable<(string name, string value)> entrys) touple)
         {
-            if ((touple.fields.Any(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)) && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool))||(touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) != 0 && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)).Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1).Aggregate((newBool, oldBool) => newBool && oldBool)))
+            if ((touple
+                .fields
+                .Any(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey)) 
+                && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.PrimaryKey))
+                .Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1)
+                .Aggregate((newBool, oldBool) => newBool && oldBool))
+                ||(touple.fields.Count(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey)) != 0 
+                && touple.fields.Where(field => field.fieldType.HasFlag(DBFieldKeyType.ClusteredPrimaryKey))
+                .Select(field => touple.entrys.Count(entry => entry.name == field.fieldName) == 1)
+                .Aggregate((newBool, oldBool) => newBool && oldBool))
+                )
             {
                 var newCommand = new MySqlCommand(FormatCommand(touple));
                 AddParameters(newCommand, touple.entrys);
